@@ -30,6 +30,8 @@ public sealed class PsqlUserRepository : IUserRepository
 
     public async Task<LoginResult> TryLoginAsync(string userName, string password, string ip, CancellationToken cancellationToken)
     {
+        if (_connection.State == System.Data.ConnectionState.Closed)
+            await _connection.OpenAsync(cancellationToken);
         await using NpgsqlTransaction transaction = await _connection.BeginTransactionAsync(cancellationToken);
 
         var id = await GetUserIdAsync(userName);
@@ -61,7 +63,7 @@ public sealed class PsqlUserRepository : IUserRepository
         {
             // Adding login log
             yield return 0 < await _connection.ExecuteAsync(
-                $"INERT INTO {LOGIN_TABLE}({LoginLog.UserId}, {LoginLog.IP}) VALUES (@UserId, @Ip)",
+                $"INSERT INTO {LOGIN_TABLE}({LoginLog.UserId}, {LoginLog.IP}) VALUES (@UserId, @Ip)",
                 new
                 {
                     UserId = id,
