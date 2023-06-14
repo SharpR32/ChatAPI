@@ -21,7 +21,9 @@ public sealed class Result : Result<object?>
 
     public static Result FromError(string key, StringValues errors)
     {
-        return (Result)Result<object?>.FromError(key, errors);
+        Result result = new Result();
+        result.AddError(key, errors);
+        return result;
     }
 
 }
