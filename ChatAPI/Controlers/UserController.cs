@@ -1,24 +1,40 @@
 ﻿using ChatAPI.Application.Users;
 using ChatAPI.Application.Users.Requests;
 using ChatAPI.Controlers.Common;
+using Mediator;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ChatAPI.Controlers;
+using static EndpointGenerator;
 
-public static class UserController
+public class UserController : IController
 {
-    public static IEndpointRouteBuilder MapUserRoutes(this IEndpointRouteBuilder builder)
+    private const string GROUP_NAME = "user";
+
+    public static IEndpointRouteBuilder MapRoutes(IEndpointRouteBuilder builder)
     {
         builder.MapPost(
             pattern: PrependController("register"),
-            handler: EndpointGenerator.EndpointGen<RegistrationData>());
+            handler: EndpointGen<RegistrationData>())
+            .IncludeMetadata(GROUP_NAME);
 
         builder.MapPost(
             pattern: PrependController("login"),
-            handler: EndpointGenerator.EndpointGen<LoginData>());
+            handler: EndpointGen<LoginData>())
+            .IncludeMetadata(GROUP_NAME);
+
+        builder.MapGet(
+            pattern: PrependController("{userId}"),
+            handler: (
+            [FromServices] IMediator mediator,
+            [FromRoute] Guid userId,
+            CancellationToken cancellation)
+            => InvokeAction(mediator, new UserDataQuery(userId), cancellation))
+            .IncludeMetadata(GROUP_NAME);
 
         return builder;
 
         static string PrependController(string path)
-            => $"/user/{path}";
+            => $"/{GROUP_NAME}/{path}";
     }
 }

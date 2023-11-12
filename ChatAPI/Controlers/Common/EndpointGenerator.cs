@@ -8,7 +8,7 @@ public static class EndpointGenerator
 {
     public enum DataSource
     {
-        Body, Query
+        Body, Query, Path
     }
     public static Delegate EndpointGen<T>(DataSource dataSource = DataSource.Body) where T : IMessage
     {
@@ -38,14 +38,15 @@ public static class EndpointGenerator
         {
             var result = await mediator.Send(request);
 
-            if (result is Unit or null)
-                return Results.Ok();
-            else if (result is IAppResult appResult)
-                return appResult.Success
+            return result switch
+            {
+                null => Results.NotFound(),
+                Unit or IAppResult { Success: true, Empty: true } => Results.Ok(),
+                IAppResult appResult => appResult.Success
                     ? Results.Ok(appResult.GetSuccessData())
-                    : Results.BadRequest(appResult.Errors);
-            else
-                return Results.Ok(result);
+                    : Results.BadRequest(appResult.Errors),
+                _ => Results.Ok(result)
+            };
         }
         catch
         {
@@ -53,4 +54,16 @@ public static class EndpointGenerator
             return Results.BadRequest(errorObject);
         }
     }
+
+    public static IEndpointConventionBuilder IncludeMetadata(
+        this IEndpointConventionBuilder builder,
+        string controllerName,
+        string? summary = null!,
+        string? description = null!)
+    {
+        return builder.WithTags(controllerName)
+            .WithSummary(summary ?? string.Empty)
+            .WithDescription(description ?? string.Empty);
+    }
 }
+

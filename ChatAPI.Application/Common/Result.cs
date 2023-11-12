@@ -3,10 +3,13 @@ using Microsoft.Extensions.Primitives;
 
 namespace ChatAPI.Application.Common;
 
+
 public interface IAppResult
 {
     bool Success { get; }
     IDictionary<string, string[]>? Errors { get; }
+    bool Empty { get; }
+
     object? GetSuccessData();
 }
 public sealed class Result : Result<object?>
@@ -26,6 +29,15 @@ public sealed class Result : Result<object?>
         return result;
     }
 
+    public static Result<T> FromData<T>(T data)
+        where T : class
+        => new(data);
+
+    public static Result<T> FromEmpty<T>()
+        where T : class
+        => new();
+
+
 }
 public class Result<TResult> : IAppResult
     where TResult : class?
@@ -33,6 +45,7 @@ public class Result<TResult> : IAppResult
     public TResult? SuccessData { get; protected set; }
     public IDictionary<string, string[]>? Errors { get; protected set; }
     public bool Success { get => Errors is null or { Count: 0 }; }
+    public bool Empty { get => SuccessData is null; }
 
     public Result() { }
 

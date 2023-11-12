@@ -1,5 +1,5 @@
 ﻿using ChatAPI.Application.Common;
-using ChatAPI.Infrastructure.Services;
+using ChatAPI.Infrastructure.Services.Abstraction;
 using Mediator;
 
 namespace ChatAPI.Application.Users;

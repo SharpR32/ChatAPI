@@ -1,7 +1,7 @@
 ﻿using ChatAPI.Application.Common;
 using ChatAPI.Application.Common.Services;
 using ChatAPI.Infrastructure.Exceptions;
-using ChatAPI.Infrastructure.Services;
+using ChatAPI.Infrastructure.Services.Abstraction;
 using Mediator;
 using Microsoft.Extensions.Primitives;
 

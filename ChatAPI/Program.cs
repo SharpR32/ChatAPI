@@ -1,14 +1,20 @@
 using ChatAPI.Application;
 using ChatAPI.Application.Common.Services;
-using ChatAPI.Controlers;
+using ChatAPI.Controlers.Common;
 using ChatAPI.Infrastructure;
+using ChatAPI.Policies.RateLimitting;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen()
+    .AddEndpointsApiExplorer()
+    .AddRateLimiter(opt =>
+    {
+        opt.AddSendMessagePolicy(builder.Configuration);
+    });
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped(sp =>
 {
@@ -16,7 +22,7 @@ builder.Services.AddScoped(sp =>
     return new UserData(httpContextAccessor.HttpContext?.Connection.RemoteIpAddress!);
 });
 builder.Services.AddApplication()
-    .AddInfrastructure();
+    .AddInfrastructure(builder.Configuration);
 
 WebApplication app = builder.Build();
 
@@ -28,6 +34,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.MapUserRoutes();
+app.MapSimpleControllersFromAssembly();
 
 app.Run();

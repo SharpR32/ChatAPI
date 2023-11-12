@@ -1,26 +1,41 @@
 ﻿using ChatAPI.Infrastructure.Exceptions;
+using ChatAPI.Infrastructure.Services.Abstraction;
 using Dapper;
 using Npgsql;
+using static ChatAPI.Infrastructure.Services.UserRepositories.DbConstants;
 
-using static ChatAPI.Infrastructure.DbConstants;
+namespace ChatAPI.Infrastructure.Services.UserRepositories;
 
-namespace ChatAPI.Infrastructure.Services;
-
-public interface IUserRepository
+/// Contains constants used in db queries
+/// </summary>
+/// <remarks>
+/// Constants are used for string precompilation
+/// </remarks>
+public static class DbConstants
 {
-    Task<bool> RegisterUserAsync(string userName, string password, CancellationToken cancellationToken);
-    Task<LoginResult> TryLoginAsync(string userName, string password, string ip, CancellationToken cancellationToken);
-    Task<bool> UserExistsAsync(string userName, CancellationToken cancellationToken);
+    public const string USER_TABLE = "public.users";
+    public const string LOGIN_TABLE = "public.login_log";
+
+    public static class User
+    {
+        public const string Id = "id";
+        public const string UserName = "username";
+        public const string PasswordHash = "password";
+        public const string LoginCount = "login_count";
+    }
+
+    public static class LoginLog
+    {
+        public const string UserId = "user_id";
+        public const string IP = "ip";
+    }
 }
-
-public record LoginResult(bool Success, long Id);
-
-public sealed class PsqlUserRepository : IUserRepository
+public sealed class PsqlRepository : IUserRepository
 {
     private readonly IPasswordHasher _hasher;
     private readonly NpgsqlConnection _connection;
 
-    public PsqlUserRepository(
+    public PsqlRepository(
         IPasswordHasher hasher,
         NpgsqlConnection connection)
     {
@@ -28,7 +43,7 @@ public sealed class PsqlUserRepository : IUserRepository
         _connection = connection;
     }
 
-    public async Task<LoginResult> TryLoginAsync(string userName, string password, string ip, CancellationToken cancellationToken)
+    public async ValueTask<LoginResult> TryLoginAsync(string userName, string password, string ip, CancellationToken cancellationToken)
     {
         if (_connection.State == System.Data.ConnectionState.Closed)
             await _connection.OpenAsync(cancellationToken);
@@ -82,7 +97,7 @@ public sealed class PsqlUserRepository : IUserRepository
         }
     }
 
-    public async Task<bool> RegisterUserAsync(string userName, string password, CancellationToken cancellationToken)
+    public async ValueTask<bool> RegisterUserAsync(string userName, string password, CancellationToken cancellationToken)
     {
         var passwordHash = _hasher.Hash(userName, password).ToArray();
         var changedRecords = await _connection.ExecuteAsync(
@@ -92,7 +107,7 @@ public sealed class PsqlUserRepository : IUserRepository
         return changedRecords > 0;
     }
 
-    private async Task<long> GetUserIdAsync(string userName)
+    private async ValueTask<long> GetUserIdAsync(string userName)
     {
         IEnumerable<long> results = await _connection.QueryAsync<long>(
             $"SELECT {User.Id} FROM {USER_TABLE} WHERE username = @UserName LIMIT 1",
@@ -101,9 +116,19 @@ public sealed class PsqlUserRepository : IUserRepository
         return results.FirstOrDefault();
     }
 
-    public async Task<bool> UserExistsAsync(string userName, CancellationToken cancellationToken)
+    public async ValueTask<bool> UserExistsAsync(string userName, CancellationToken cancellationToken)
     {
         var id = await GetUserIdAsync(userName);
         return id > 0;
+    }
+
+    public ValueTask<Domain.Entities.User> GetUserMetadataAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public ValueTask<bool> UserExistsAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 }
