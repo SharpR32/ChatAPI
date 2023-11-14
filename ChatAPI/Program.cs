@@ -2,6 +2,7 @@ using ChatAPI.Application;
 using ChatAPI.Application.Common.Services;
 using ChatAPI.Controlers.Common;
 using ChatAPI.Infrastructure;
+using ChatAPI.Infrastructure.Services.CurrentUser;
 using ChatAPI.Policies.RateLimitting;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -34,6 +35,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.MapCurrentUser();
 app.MapSimpleControllersFromAssembly();
 
 app.Run();

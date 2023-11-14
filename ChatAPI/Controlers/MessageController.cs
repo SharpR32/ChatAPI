@@ -1,6 +1,8 @@
 ﻿using ChatAPI.Application.Messages;
 using ChatAPI.Controlers.Common;
 using ChatAPI.Policies.RateLimitting;
+using Mediator;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ChatAPI.Controlers;
 using static EndpointGenerator;
@@ -18,7 +20,12 @@ public class MessageController : IController
 
         builder.MapGet(
             pattern: PrependController("{participantId}"),
-            handler: EndpointGen<SendMessage>(DataSource.Query));
+            handler: (Guid participantId,
+                [FromQuery] DateTimeOffset since,
+                [FromServices] IMediator mediator,
+                CancellationToken cancellationToken)
+                    => InvokeAction(mediator, new GetMessages(participantId, since), cancellationToken))
+            .IncludeMetadata(GROUP_NAME);
 
         return builder;
     }

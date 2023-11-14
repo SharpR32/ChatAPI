@@ -1,5 +1,7 @@
 ﻿using ChatAPI.Infrastructure.Services;
 using ChatAPI.Infrastructure.Services.Abstraction;
+using ChatAPI.Infrastructure.Services.CurrentUser;
+using ChatAPI.Infrastructure.Services.TokenHandler;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +15,8 @@ public static class DependencyInjectionExtensions
         services.AddPasswordHasher(configuration)
             .AddScoped<IUserRepository, Services.UserRepositories.MockRepository>()
             .AddScoped<IMessageRepository, Services.MessageRespositories.MockRepository>()
+            .AddSingleton<ITokenManager, TokenHandler>()
+            .AddCurrentUserProvider()
             .AddMassTransit(config =>
             {
                 config.UsingRabbitMq((context, rabbitConfig) =>

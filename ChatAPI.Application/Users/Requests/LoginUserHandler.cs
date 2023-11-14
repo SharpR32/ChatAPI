@@ -6,6 +6,7 @@ using Mediator;
 using Microsoft.Extensions.Primitives;
 
 namespace ChatAPI.Application.Users.Requests;
+using static TokenConstants;
 
 public record LoginData(string UserName, string Password) : BaseLoginData(UserName, Password), ICommand<Result<string>>;
 public sealed class LoginUserHandler : ICommandHandler<LoginData, Result<string>>
@@ -35,9 +36,10 @@ public sealed class LoginUserHandler : ICommandHandler<LoginData, Result<string>
             if (!success)
                 return Result<string>.FromError("loginError", "Podane hasło jest nieprawidłowe");
 
-            return new(_tokenManager.GenerateToken(new Dictionary<string, StringValues>()
+            return new(await _tokenManager.GenerateTokenAsync(new Dictionary<string, StringValues>()
             {
-                {"id", id.ToString() }
+                { ID, id.ToString() },
+                { DISPLAY_NAME, command.UserName }
             }));
         }
         catch (UserDoesntExistException)

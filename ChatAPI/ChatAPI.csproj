@@ -17,4 +17,10 @@
     <ProjectReference Include="..\ChatAPI.Infrastructure\ChatAPI.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="token_key.perm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
