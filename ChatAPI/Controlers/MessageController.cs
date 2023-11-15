@@ -16,7 +16,8 @@ public class MessageController : IController
             pattern: PrependController(),
             handler: EndpointGen<SendMessage>())
             .RequireRateLimiting(SendMessagePolicy.NAME)
-            .IncludeMetadata(GROUP_NAME);
+            .IncludeMetadata(GROUP_NAME)
+            .RequireAuthorization();
 
         builder.MapGet(
             pattern: PrependController("{participantId}"),
@@ -25,7 +26,8 @@ public class MessageController : IController
                 [FromServices] IMediator mediator,
                 CancellationToken cancellationToken)
                     => InvokeAction(mediator, new GetMessages(participantId, since), cancellationToken))
-            .IncludeMetadata(GROUP_NAME);
+            .IncludeMetadata(GROUP_NAME)
+            .RequireAuthorization();
 
         return builder;
     }

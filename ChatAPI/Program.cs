@@ -3,6 +3,7 @@ using ChatAPI.Application.Common.Services;
 using ChatAPI.Controlers.Common;
 using ChatAPI.Infrastructure;
 using ChatAPI.Infrastructure.Services.CurrentUser;
+using ChatAPI.Middlewares;
 using ChatAPI.Policies.RateLimitting;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -21,6 +22,17 @@ builder.Services.AddScoped(sp =>
 {
     IHttpContextAccessor httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
     return new UserData(httpContextAccessor.HttpContext?.Connection.RemoteIpAddress!);
+});
+builder.Services.AddScoped<TokenRequirementHandler>();
+builder.Services.AddAuthorizationCore(opt =>
+{
+    const string USER_INITIALISED_POLICY = "UserInitialised";
+    opt.AddPolicy(USER_INITIALISED_POLICY, policy =>
+    {
+        policy.AddRequirements(new TokenRequirement());
+    });
+
+    opt.DefaultPolicy = opt.GetPolicy(USER_INITIALISED_POLICY)!;
 });
 builder.Services.AddApplication()
     .AddInfrastructure(builder.Configuration);

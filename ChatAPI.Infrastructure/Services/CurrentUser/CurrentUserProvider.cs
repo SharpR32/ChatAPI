@@ -22,6 +22,8 @@ public class CurrentUserProvider : ICurrentUser, ICurrentUserProvider
 
     public string? DisplayName => GetDataSafely(dict => dict.GetValueOrDefault(DISPLAY_NAME)).ToString();
 
+    public bool Initiated => _data is not null;
+
     private IReadOnlyDictionary<string, StringValues>? _data;
 
     private TResult GetDataSafely<TResult>(Func<IReadOnlyDictionary<string, StringValues>, TResult> accessor)

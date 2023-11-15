@@ -4,4 +4,5 @@ public interface ICurrentUser
 {
     public Guid Id { get; }
     public string? DisplayName { get; }
+    bool Initiated { get; }
 }

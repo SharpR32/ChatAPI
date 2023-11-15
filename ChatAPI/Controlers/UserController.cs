@@ -30,7 +30,8 @@ public class UserController : IController
             [FromRoute] Guid userId,
             CancellationToken cancellation)
             => InvokeAction(mediator, new UserDataQuery(userId), cancellation))
-            .IncludeMetadata(GROUP_NAME);
+            .IncludeMetadata(GROUP_NAME)
+            .RequireAuthorization();
 
         return builder;
 
