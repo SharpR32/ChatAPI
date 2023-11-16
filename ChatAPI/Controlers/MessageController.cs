@@ -34,5 +34,5 @@ public class MessageController : IController
 
 
     static string PrependController(string? path = null)
-        => $"/{GROUP_NAME}/{path}";
+        => $"api/{GROUP_NAME}/{path}";
 }

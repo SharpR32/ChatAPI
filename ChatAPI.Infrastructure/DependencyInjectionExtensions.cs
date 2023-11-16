@@ -1,5 +1,9 @@
-﻿using ChatAPI.Infrastructure.Services;
+﻿using ChatAPI.Domain.Events;
+using ChatAPI.Infrastructure.Services;
 using ChatAPI.Infrastructure.Services.Abstraction;
+using ChatAPI.Infrastructure.Services.CommunicationManager;
+using ChatAPI.Infrastructure.Services.CommunicationManager.Abstraction;
+using ChatAPI.Infrastructure.Services.CommunicationManager.Consumers;
 using ChatAPI.Infrastructure.Services.CurrentUser;
 using ChatAPI.Infrastructure.Services.TokenHandler;
 using MassTransit;
@@ -17,6 +21,9 @@ public static class DependencyInjectionExtensions
             .AddScoped<IMessageRepository, Services.MessageRespositories.MockRepository>()
             .AddSingleton<ITokenManager, TokenHandler>()
             .AddCurrentUserProvider()
+            .AddSingleton<DataBus>()
+            .AddSingleton<IInternalCommunicationManager>(sp => sp.GetRequiredService<DataBus>())
+            .AddSingleton<IInternalDataBus>(sp => sp.GetRequiredService<DataBus>())
             .AddMassTransit(config =>
             {
                 config.UsingRabbitMq((context, rabbitConfig) =>
@@ -35,12 +42,17 @@ public static class DependencyInjectionExtensions
                         });
                     });
 
+                    rabbitConfig.AddPublishMessageTypesFromNamespaceContaining<MessageNotification>();
+
                     rabbitConfig.AutoDelete = false;
                     rabbitConfig.AutoStart = true;
                     rabbitConfig.ConcurrentMessageLimit = config.GetValue<int>("ConcurrentMessageLimit");
 
                     rabbitConfig.ConfigureEndpoints(context);
+
                 });
+
+                config.AddConsumer<MessageNotificationConsumer>();
             });
         return services;
     }

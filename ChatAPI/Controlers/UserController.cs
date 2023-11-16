@@ -36,6 +36,6 @@ public class UserController : IController
         return builder;
 
         static string PrependController(string path)
-            => $"/{GROUP_NAME}/{path}";
+            => $"api/{GROUP_NAME}/{path}";
     }
 }

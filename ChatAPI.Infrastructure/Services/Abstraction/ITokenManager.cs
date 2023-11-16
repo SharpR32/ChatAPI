@@ -5,7 +5,7 @@ namespace ChatAPI.Infrastructure.Services.Abstraction;
 public interface ITokenManager
 {
     ValueTask<string> GenerateTokenAsync(IReadOnlyDictionary<string, StringValues> claims);
-    ValueTask<IReadOnlyDictionary<string, StringValues>> ValidateTokenAsync(string token);
+    ValueTask<IReadOnlyDictionary<string, string[]>> ValidateTokenAsync(string token);
 }
 
 public static class TokenConstants

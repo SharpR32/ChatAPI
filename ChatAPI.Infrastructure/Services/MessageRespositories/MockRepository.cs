@@ -34,6 +34,6 @@ public class MockRepository : IMessageRepository
 
     public ValueTask<Guid> SendMessage(Guid receiverId, string content, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return ValueTask.FromResult(Guid.NewGuid());
     }
 }

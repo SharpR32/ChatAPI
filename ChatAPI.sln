@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatAPI.Application", "Chat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatAPI.Infrastructure", "ChatAPI.Infrastructure\ChatAPI.Infrastructure.csproj", "{56F24A64-F65C-446E-8CE6-C10F1F33E093}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatAPI.Domain", "ChatAPI.Domain\ChatAPI.Domain.csproj", "{1214026A-4F6F-48DA-B920-57058E24A6A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatAPI.Domain", "ChatAPI.Domain\ChatAPI.Domain.csproj", "{1214026A-4F6F-48DA-B920-57058E24A6A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

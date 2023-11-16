@@ -1,0 +1,30 @@
+# For more info on HTTP files go to https://aka.ms/vs/httpfile
+@host=https://localhost:7272
+@content-type=application/json
+@token=Bx+YrbNAFTm8qUxUEA/J6Gt+2Wv16CxkpIwG8GJVMXmAM7jmV8nHjPzU4bOSE3P82gagm/R7Cxd3O4/dTqpssOdSkRA/ZAi6fw4ncgfevP4nQjMWjy/cgaPVjaCE2VoHOeyV69M9h7RHlVx3qyDW66Dm2fN0V+NiZwIG00rYDeo=
+
+@participantId=09183FB2-9600-4B32-818D-5B1C85068E92
+@since=2023-12-12
+GET {{host}}/api/Messages/{{participantId}}?Since={{since}}
+Authorization: Bearer {{token}}
+
+###
+
+POST {{host}}/api/user/login
+Content-Type: {{content-type}}
+
+{
+    "userName": "asdasdsad",
+    "password": "asdasdas"
+}
+
+###
+
+POST {{host}}/api/messages
+Authorization: Bearer {{token}}
+Content-Type: {{content-type}}
+
+{
+  "receiverId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "content": "string"
+}

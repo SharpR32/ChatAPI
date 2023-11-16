@@ -12,7 +12,8 @@ public sealed class TokenHandler : ITokenManager
     private const int KEY_BITS = 1024;
     private readonly Lazy<Task<string>> _cryptoKeyAccessor = new Lazy<Task<string>>(async () =>
     {
-        var cryptoKeyPath = Path.Combine(Assembly.GetExecutingAssembly().Location, "token_key.perm");
+        var directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
+        var cryptoKeyPath = Path.Combine(directory, "token_key.perm");
         using FileStream fileHandler = File.OpenRead(cryptoKeyPath);
 
         var buffer = new byte[fileHandler.Length];
@@ -39,14 +40,16 @@ public sealed class TokenHandler : ITokenManager
         return encryption;
     }
 
-    public async ValueTask<IReadOnlyDictionary<string, StringValues>> ValidateTokenAsync(string token)
+    public async ValueTask<IReadOnlyDictionary<string, string[]>> ValidateTokenAsync(string token)
     {
         var tokenBytes = Convert.FromBase64String(token);
 
         using RSA rsa = GenerateEncryptor(await _cryptoKeyAccessor.Value);
         var decryptedData = rsa.Decrypt(tokenBytes, _padding);
         var serialisedData = Encoding.UTF8.GetString(decryptedData);
-        return JsonSerializer.Deserialize<IReadOnlyDictionary<string, StringValues>>(serialisedData)
+        Dictionary<string, string[]> result = JsonSerializer.Deserialize<Dictionary<string, string[]>>(serialisedData)
             ?? throw new InvalidTokenException();
+
+        return result;
     }
 }

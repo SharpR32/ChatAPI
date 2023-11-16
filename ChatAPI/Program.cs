@@ -2,40 +2,53 @@ using ChatAPI.Application;
 using ChatAPI.Application.Common.Services;
 using ChatAPI.Controlers.Common;
 using ChatAPI.Infrastructure;
-using ChatAPI.Infrastructure.Services.CurrentUser;
 using ChatAPI.Middlewares;
 using ChatAPI.Policies.RateLimitting;
+using ChatAPI.SignalRHubs;
+using System.Security.Claims;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen()
+builder.Services
+    .AddEndpointsApiExplorer()
+    .AddSwaggerGen()
     .AddEndpointsApiExplorer()
     .AddRateLimiter(opt =>
     {
         opt.AddSendMessagePolicy(builder.Configuration);
-    });
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped(sp =>
-{
-    IHttpContextAccessor httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
-    return new UserData(httpContextAccessor.HttpContext?.Connection.RemoteIpAddress!);
-});
-builder.Services.AddScoped<TokenRequirementHandler>();
-builder.Services.AddAuthorizationCore(opt =>
-{
-    const string USER_INITIALISED_POLICY = "UserInitialised";
-    opt.AddPolicy(USER_INITIALISED_POLICY, policy =>
+    })
+    .AddHttpContextAccessor()
+    .AddScoped(sp =>
     {
-        policy.AddRequirements(new TokenRequirement());
-    });
+        IHttpContextAccessor httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
+        return new UserData(httpContextAccessor.HttpContext?.Connection.RemoteIpAddress!);
+    })
+    .AddWebEncoders()
+    .AddScoped<TokenAuthenticator>()
+    .AddAuthorization(opt =>
+    {
+        const string USER_INITIALISED_POLICY = "UserInitialised";
+        opt.AddPolicy(USER_INITIALISED_POLICY, policy =>
+        {
+            policy.RequireClaim(ClaimTypes.Authentication, true.ToString());
+        });
 
-    opt.DefaultPolicy = opt.GetPolicy(USER_INITIALISED_POLICY)!;
-});
-builder.Services.AddApplication()
+        opt.DefaultPolicy = opt.GetPolicy(USER_INITIALISED_POLICY)!;
+    })
+    .AddAuthenticationCore(opt =>
+    {
+        opt.AddScheme("Bearer", opt =>
+        {
+            opt.HandlerType = typeof(TokenAuthenticator);
+        });
+    })
+    .AddApplication()
     .AddInfrastructure(builder.Configuration);
+
+builder.Services
+    .AddSignalR();
 
 WebApplication app = builder.Build();
 
@@ -47,7 +60,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.MapCurrentUser();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapSimpleControllersFromAssembly();
+app.MapHub<NotificationHub>("/api/notifications");
 
 app.Run();

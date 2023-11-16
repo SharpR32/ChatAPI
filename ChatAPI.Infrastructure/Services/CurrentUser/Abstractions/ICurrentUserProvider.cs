@@ -1,9 +1,6 @@
-﻿using ChatAPI.Infrastructure.Services.Abstraction;
-using Microsoft.Extensions.Primitives;
-
-namespace ChatAPI.Infrastructure.Services.CurrentUser.Abstractions;
+﻿namespace ChatAPI.Infrastructure.Services.CurrentUser.Abstractions;
 
 public interface ICurrentUserProvider
 {
-    public void SetUserData(IReadOnlyDictionary<string, StringValues> data);
+    public void SetUserData(IReadOnlyDictionary<string, string[]> data);
 }

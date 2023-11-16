@@ -11,4 +11,4 @@ public interface IUserRepository
     ValueTask<User> GetUserMetadataAsync(Guid userId, CancellationToken cancellationToken);
 }
 
-public record LoginResult(bool Success, long Id);
+public record LoginResult(bool Success, Guid Id);

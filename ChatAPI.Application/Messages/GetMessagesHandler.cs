@@ -5,7 +5,7 @@ using System.Collections.Immutable;
 
 namespace ChatAPI.Application.Messages;
 
-public sealed record GetMessages(Guid ParticipantId, DateTimeOffset? Since) : IWrappedRequest<MessageViewModel[]>;
+public sealed record GetMessages(Guid ParticipantId, DateTimeOffset? Since = null) : IWrappedRequest<MessageViewModel[]>;
 public sealed record MessageViewModel(Guid Id, string Content, DateTimeOffset CreatedTime);
 public sealed class GetMessagesHandler : IWrappedRequestHandler<GetMessages, MessageViewModel[]>
 {

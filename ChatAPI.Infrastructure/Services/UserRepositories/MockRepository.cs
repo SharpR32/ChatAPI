@@ -20,7 +20,7 @@ public sealed class MockRepository : IUserRepository
 
     public ValueTask<LoginResult> TryLoginAsync(string userName, string password, string ip, CancellationToken cancellationToken)
     {
-        return ValueTask.FromResult(new LoginResult(true, 1));
+        return ValueTask.FromResult(new LoginResult(true, Guid.NewGuid()));
     }
 
     public ValueTask<bool> UserExistsAsync(string userName, CancellationToken cancellationToken)
