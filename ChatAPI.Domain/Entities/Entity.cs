@@ -3,5 +3,5 @@
 public abstract class Entity
 {
     public Guid Id { get; set; }
-    public DateTimeOffset CreatedTime { get; private set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset CreatedTime { get; set; }
 }

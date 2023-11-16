@@ -1,6 +1,7 @@
 ﻿using ChatAPI.Domain.Events;
 using ChatAPI.Infrastructure.Services;
 using ChatAPI.Infrastructure.Services.Abstraction;
+using ChatAPI.Infrastructure.Services.CassandraDbProvider;
 using ChatAPI.Infrastructure.Services.CommunicationManager;
 using ChatAPI.Infrastructure.Services.CommunicationManager.Abstraction;
 using ChatAPI.Infrastructure.Services.CommunicationManager.Consumers;
@@ -17,13 +18,14 @@ public static class DependencyInjectionExtensions
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddPasswordHasher(configuration)
-            .AddScoped<IUserRepository, Services.UserRepositories.MockRepository>()
+            .AddScoped<IUserRepository, Services.UserRepositories.CassandraRepository>()
             .AddScoped<IMessageRepository, Services.MessageRespositories.MockRepository>()
             .AddSingleton<ITokenManager, TokenHandler>()
             .AddCurrentUserProvider()
             .AddSingleton<DataBus>()
             .AddSingleton<IInternalCommunicationManager>(sp => sp.GetRequiredService<DataBus>())
             .AddSingleton<IInternalDataBus>(sp => sp.GetRequiredService<DataBus>())
+            .AddCassandraDb(configuration)
             .AddMassTransit(config =>
             {
                 config.UsingRabbitMq((context, rabbitConfig) =>
@@ -56,4 +58,5 @@ public static class DependencyInjectionExtensions
             });
         return services;
     }
+
 }

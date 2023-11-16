@@ -14,10 +14,18 @@ POST {{host}}/api/user/login
 Content-Type: {{content-type}}
 
 {
-    "userName": "asdasdsad",
-    "password": "asdasdas"
+    "userName": "string",
+    "password": "string"
 }
 
+###
+POST {{host}}/api/user/register
+Content-Type: {{content-type}}
+
+{
+  "userName": "string",
+  "password": "string"
+}
 ###
 
 POST {{host}}/api/messages
