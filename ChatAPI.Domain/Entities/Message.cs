@@ -3,7 +3,8 @@
 public sealed class Message : Entity
 {
 
-    public required string Content { get; set; }
-    public required Guid SenderId { get; set; }
-    public required Guid ReceiverId { get; set; }
+    public string Content { get; set; }
+    public Guid SenderId { get; set; }
+    public Guid ReceiverId { get; set; }
+    public string RoomIdentifier { get; set; }
 }

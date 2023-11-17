@@ -1,12 +1,12 @@
 # For more info on HTTP files go to https://aka.ms/vs/httpfile
 @host=https://localhost:7272
 @content-type=application/json
-@token=Bx+YrbNAFTm8qUxUEA/J6Gt+2Wv16CxkpIwG8GJVMXmAM7jmV8nHjPzU4bOSE3P82gagm/R7Cxd3O4/dTqpssOdSkRA/ZAi6fw4ncgfevP4nQjMWjy/cgaPVjaCE2VoHOeyV69M9h7RHlVx3qyDW66Dm2fN0V+NiZwIG00rYDeo=
 
-@participantId=09183FB2-9600-4B32-818D-5B1C85068E92
-@since=2023-12-12
-GET {{host}}/api/Messages/{{participantId}}?Since={{since}}
-Authorization: Bearer {{token}}
+@token=GCmmSVO7EdCfq9xMRuVR1JAKiJwqo7/n1MOjNPcUXm6sET/ULIF6Hk1wUpanOYBN9zVqA5xwGDfhGH2tGNU8KB7tzAByYl5xGeNNXEqKdILKZJeF0iOBIBfModVOnTZ7QuBRhc0FfxvBK32jZ5i96o61vwIwSEa1I+QtaG2W4gU=
+@participantId=6446d1da-e59c-4fdd-9692-30d7a1f1b717
+
+# @token=RhZiRPQuV/BUwPPUG7NvzAPeqJQP6rNjWF5UmCUkRnYSu3jf+6QRLvr6ohMmaEF4acGG1CjAeVV8eIn83EknyLtN2ZjBK8cQd8effOCieR1+3D76OQ6y+/HIouagmguXF1Dqh31hqbNuK/6U/9DZ+ILeBhc5yY+lV0TqH8NkkEY=
+# @participantId=f9685fb7-d06b-4822-bd2d-bb90f7d20d98
 
 ###
 
@@ -14,8 +14,8 @@ POST {{host}}/api/user/login
 Content-Type: {{content-type}}
 
 {
-    "userName": "string",
-    "password": "string"
+    "userName": "string2",
+    "password": "string2"
 }
 
 ###
@@ -23,8 +23,8 @@ POST {{host}}/api/user/register
 Content-Type: {{content-type}}
 
 {
-  "userName": "string",
-  "password": "string"
+  "userName": "string2",
+  "password": "string2"
 }
 ###
 
@@ -33,6 +33,11 @@ Authorization: Bearer {{token}}
 Content-Type: {{content-type}}
 
 {
-  "receiverId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "content": "string"
+  "receiverId": "{{participantId}}",
+  "content": "aasdasdasdsd"
 }
+
+###
+@since=2023-12-12
+GET {{host}}/api/Messages/{{participantId}}?Since={{since}}
+Authorization: Bearer {{token}}

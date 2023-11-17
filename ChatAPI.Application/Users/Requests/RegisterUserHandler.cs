@@ -20,6 +20,6 @@ public sealed class RegisterUserHandler : ICommandHandler<RegistrationData, Resu
         if (success)
             return new Result();
 
-        return Result.FromError("error", "Wystąpił nieznany błąd");
+        return Result.FromError("error", "User exists");
     }
 }

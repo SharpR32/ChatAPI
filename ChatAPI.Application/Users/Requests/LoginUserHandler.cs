@@ -8,8 +8,9 @@ using Microsoft.Extensions.Primitives;
 namespace ChatAPI.Application.Users.Requests;
 using static TokenConstants;
 
-public record LoginData(string UserName, string Password) : BaseLoginData(UserName, Password), ICommand<Result<string>>;
-public sealed class LoginUserHandler : ICommandHandler<LoginData, Result<string>>
+public record LoginData(string UserName, string Password) : BaseLoginData(UserName, Password), ICommand<Result<LoginResult>>;
+public record LoginResult(string Token, Guid Id, string DisplayName);
+public sealed class LoginUserHandler : ICommandHandler<LoginData, Result<LoginResult>>
 {
     private readonly IUserRepository _repository;
     private readonly UserData _userData;
@@ -22,7 +23,7 @@ public sealed class LoginUserHandler : ICommandHandler<LoginData, Result<string>
         _tokenManager = tokenManager;
     }
 
-    public async ValueTask<Result<string>> Handle(LoginData command, CancellationToken cancellationToken)
+    public async ValueTask<Result<LoginResult>> Handle(LoginData command, CancellationToken cancellationToken)
     {
         try
         {
@@ -34,21 +35,21 @@ public sealed class LoginUserHandler : ICommandHandler<LoginData, Result<string>
                 cancellationToken);
 
             if (!success)
-                return Result<string>.FromError("loginError", "Podane hasło jest nieprawidłowe");
+                return Result<LoginResult>.FromError("loginError", "Podane hasło jest nieprawidłowe");
 
-            return new(await _tokenManager.GenerateTokenAsync(new Dictionary<string, StringValues>()
+            return new(new LoginResult(await _tokenManager.GenerateTokenAsync(new Dictionary<string, StringValues>()
             {
                 { ID, id.ToString() },
                 { DISPLAY_NAME, command.UserName }
-            }));
+            }), id, command.UserName));
         }
         catch (UserDoesntExistException)
         {
-            return Result<string>.FromError("loginError", "Podane dane nie pasują do żadnego użytkownika");
+            return Result<LoginResult>.FromError("loginError", "Podane dane nie pasują do żadnego użytkownika");
         }
         catch
         {
-            return Result<string>.FromError("error", "Wystąpił nieznany błąd");
+            return Result<LoginResult>.FromError("error", "Wystąpił nieznany błąd");
         }
 
 

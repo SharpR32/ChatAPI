@@ -1,6 +1,7 @@
 ﻿using ChatAPI.Application.Common;
 using Mediator;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace ChatAPI.Controlers.Common;
 
@@ -48,8 +49,9 @@ public static class EndpointGenerator
                 _ => Results.Ok(result)
             };
         }
-        catch
+        catch (Exception ex)
         {
+            Debug.WriteLine(ex);
             IDictionary<string, string[]>? errorObject = Result.FromError("error", "Wystąpił nieznany błąd").Errors;
             return Results.BadRequest(errorObject);
         }

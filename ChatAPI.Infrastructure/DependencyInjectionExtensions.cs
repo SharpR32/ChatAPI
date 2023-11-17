@@ -19,7 +19,7 @@ public static class DependencyInjectionExtensions
     {
         services.AddPasswordHasher(configuration)
             .AddScoped<IUserRepository, Services.UserRepositories.CassandraRepository>()
-            .AddScoped<IMessageRepository, Services.MessageRespositories.MockRepository>()
+            .AddScoped<IMessageRepository, Services.MessageRespositories.CassandraRepository>()
             .AddSingleton<ITokenManager, TokenHandler>()
             .AddCurrentUserProvider()
             .AddSingleton<DataBus>()

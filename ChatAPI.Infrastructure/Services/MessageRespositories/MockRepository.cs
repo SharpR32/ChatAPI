@@ -6,7 +6,7 @@ namespace ChatAPI.Infrastructure.Services.MessageRespositories;
 
 public class MockRepository : IMessageRepository
 {
-    public ValueTask<ImmutableArray<Message>> GetMessagesAsync(
+    public ValueTask<IEnumerable<Message>> GetMessagesAsync(
         RoomIdentifier identifier,
         DateTimeOffset since,
         CancellationToken cancellationToken,
@@ -29,7 +29,7 @@ public class MockRepository : IMessageRepository
         }.OrderByDescending(x => x.CreatedTime)
         .ToImmutableArray();
 
-        return ValueTask.FromResult(result);
+        return ValueTask.FromResult(result.AsEnumerable());
     }
 
     public ValueTask<Guid> SendMessage(Guid receiverId, string content, CancellationToken cancellationToken)
